@@ -1,119 +1,120 @@
 <template>
-  <div v-if="node.type == 'start'"
+  <div v-if="node.type === 'start'"
        :id="node.id"
        class="common-circle-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    	cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom-in' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+    	cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
     {{ node.nodeName }}
   </div>
 
-  <div v-else-if="node.type == 'end'"
+  <div v-else-if="node.type === 'end'"
        :id="node.id"
        class="common-circle-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    	cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom-in' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+    	cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
     {{ node.nodeName }}
   </div>
 
-  <div v-else-if="node.type == 'common'"
+  <div v-else-if="node.type === 'common'"
        :id="node.id"
        class="common-rectangle-node"
        :class="{ active: isActive() }"
-       :style="{ top: node.y + 'px', left: node.x + 'px',backgroundImage: `url(${tree_img})`, backgroundSize: '100% 100%',
-    		cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom-in' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+       :style="{ top: node.y + 'px', left: node.x + 'px',
+    		cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
 <!--    <a-icon type="user" class="node-icon"/>-->
-<!--    {{ node.nodeName }}-->
+    <img :src="node.image" width="100%" height="85%" style="object-fit:contain">
+    <div style="height: 15%"> {{ node.nodeName }} </div>
   </div>
 
-  <div v-else-if="node.type == 'freedom'"
+  <div v-else-if="node.type === 'freedom'"
        :id="node.id"
        class="common-rectangle-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    		cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom-in' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+    		cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
     <a-icon type="sync" class="node-icon"/>
     {{ node.nodeName }}
   </div>
 
-  <div v-else-if="node.type == 'event'"
+  <div v-else-if="node.type === 'event'"
        :id="node.id"
        class="common-circle-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    		cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom-in' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+    		cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
     {{ node.nodeName }}
   </div>
 
-  <div v-else-if="node.type == 'gateway'"
+  <div v-else-if="node.type === 'gateway'"
        :id="node.id"
        class="common-diamond-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    		cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+    		cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
   </div>
 
-  <div v-else-if="node.type == 'child-flow'"
+  <div v-else-if="node.type === 'child-flow'"
        :id="node.id"
        class="common-rectangle-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    		cursor: currentTool.type == 'drag' ? 'move' : (currentTool.type == 'connection' ? 'crosshair' :
-    																								(currentTool.type == 'zoom-in' ? 'zoom-in' :
-    																								(currentTool.type == 'zoom-out' ? 'zoom-out' : 'default'))) }"
+    		cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
     <a-icon type="api" class="node-icon"/>
     {{ node.nodeName }}
   </div>
 
-  <div v-else-if="node.type == 'x-lane'"
+  <div v-else-if="node.type === 'x-lane'"
        :id="node.id"
        class="common-x-lane-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px', height: node.height + 'px', width: node.width + 'px',
-    		cursor: currentTool.type == 'zoom-in' ? 'zoom-in' : (currentTool.type == 'zoom-out' ? 'zoom-out' : 'default') }">
+    		cursor: currentTool.type === 'zoom-in' ? 'zoom-in' : (currentTool.type === 'zoom-out' ? 'zoom-out' : 'default') }">
     <div class="lane-text-div"
-         :style="{ cursor: currentTool.type == 'drag' ? 'move' : 'default' }"
+         :style="{ cursor: currentTool.type === 'drag' ? 'move' : 'default' }"
          @click.stop="selectNode"
          @contextmenu.stop="showNodeContextMenu">
       <span class="lane-text">{{ node.nodeName }}</span>
     </div>
   </div>
 
-  <div v-else-if="node.type == 'y-lane'"
+  <div v-else-if="node.type === 'y-lane'"
        :id="node.id"
        class="common-y-lane-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px', height: node.height + 'px', width: node.width + 'px',
-    		cursor: currentTool.type == 'zoom-in' ? 'zoom-in' : (currentTool.type == 'zoom-out' ? 'zoom-out' : 'default') }">
+    		cursor: currentTool.type === 'zoom-in' ? 'zoom-in' : (currentTool.type === 'zoom-out' ? 'zoom-out' : 'default') }">
     <div class="lane-text-div"
-         :style="{ cursor: currentTool.type == 'drag' ? 'move' : 'default' }"
+         :style="{ cursor: currentTool.type === 'drag' ? 'move' : 'default' }"
          @click.stop="selectNode"
          @contextmenu.stop="showNodeContextMenu">
       <span class="lane-text">{{ node.nodeName }}</span>
@@ -141,7 +142,6 @@ export default {
   },
   data () {
     return {
-      tree_img: require('../../../../../static/images/tree.png'),
       currentSelect: this.select,
       currentSelectGroup: this.selectGroup
     }
@@ -155,7 +155,7 @@ export default {
         handle: function (e, el) {
           var possibles = el.parentNode.querySelectorAll('.common-circle-node,.common-rectangle-node,.common-diamond-node,.lane-text-div');
           for (var i = 0; i < possibles.length; i++) {
-            if (possibles[i] === el || e.target.className == 'lane-text') return true;
+            if (possibles[i] === el || e.target.className === 'lane-text') return true;
           }
           return false;
         },
@@ -174,21 +174,18 @@ export default {
           that.$emit('hideAlignLine');
         }
       });
-
-      if (that.node.type == 'x-lane' || that.node.type == 'y-lane') {
-        $('#' + that.node.id).resizable({
-          minHeight: 200,
-          minWidth: 200,
-          maxHeight: 2000,
-          maxWidth: 2000,
-          ghost: true,
-          autoHide: true,
-          stop: function (event, ui) {
-            that.node.height = ui.size.height;
-            that.node.width = ui.size.width;
-          }
-        });
-      }
+      $('#' + that.node.id).resizable({
+        minHeight: 200,
+        minWidth: 200,
+        maxHeight: 2000,
+        maxWidth: 2000,
+        ghost: true,
+        autoHide: true,
+        stop: function (event, ui) {
+          that.node.height = ui.size.height;
+          that.node.width = ui.size.width;
+        }
+      });
       that.currentSelect = that.node;
       that.currentSelectGroup = [];
     },
@@ -199,7 +196,7 @@ export default {
         if (!flag) {
           that.currentSelectGroup = [];
         } else {
-          let f = that.currentSelectGroup.filter(s => s.id == that.node.id);
+          let f = that.currentSelectGroup.filter(s => s.id === that.node.id);
           if (f.length <= 0) {
             that.plumb.addToDragSelection(that.node.id);
             that.currentSelectGroup.push(that.node);
@@ -213,8 +210,8 @@ export default {
     },
     isActive () {
       const that = this;
-      if (that.currentSelect.id == that.node.id) return true;
-      let f = that.currentSelectGroup.filter(n => n.id == that.node.id);
+      if (that.currentSelect.id === that.node.id) return true;
+      let f = that.currentSelectGroup.filter(n => n.id === that.node.id);
       if (f.length > 0) return true;
       return false;
     }

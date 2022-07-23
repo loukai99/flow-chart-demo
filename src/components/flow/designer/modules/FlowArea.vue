@@ -5,7 +5,7 @@
     <div v-if="container.auxiliaryLine.isOpen && container.auxiliaryLine.isShowYLine" class="auxiliary-line-y"
          :style="{ left: auxiliaryLinePos.x + 'px' }"></div>
     <div id="flowContainer" class="flow-container"
-         :class="{ grid: flowData.config.showGrid, zoomIn: currentTool.type == 'zoom-in', zoomOut: currentTool.type == 'zoom-out', canScale: container.scaleFlag, canDrag: container.dragFlag, canMultiple: rectangleMultiple.flag }"
+         :class="{ grid: flowData.config.showGrid, zoomIn: currentTool.type === 'zoom-in', zoomOut: currentTool.type === 'zoom-out', canScale: container.scaleFlag, canDrag: container.dragFlag, canMultiple: rectangleMultiple.flag }"
          :style="{ top: container.pos.top + 'px', left: container.pos.left + 'px', transform: 'scale(' + container.scale + ')', transformOrigin: container.scaleOrigin.x + 'px ' + container.scaleOrigin.y + 'px' }"
          @click.stop="containerHandler"
          @mousedown="mousedownHandler"
@@ -136,9 +136,14 @@ export default {
       that.ctx = document.getElementById('flowContainer').parentNode;
       $('.flow-container').droppable({
         accept: function (t) {
-          if (t[0].className.indexOf('node-item') != -1) {
+          if (t[0].className.indexOf('node-item') !== -1) {
             let event = window.event || 'firefox';
-            if (that.ctx.contains(event.srcElement) || event == 'firefox') {
+            let x = event.clientX;
+            let y = event.clientY;
+            // if (that.ctx.contains(event.srcElement) || event === 'firefox') {
+            //   return true;
+            // }
+            if (x > that.ctx.offsetLeft && x < that.ctx.offsetLeft + that.ctx.offsetWidth && y > that.ctx.offsetTop && y < that.ctx.offsetTop + that.ctx.offsetHeight) {
               return true;
             }
           }
@@ -148,10 +153,11 @@ export default {
         drop: function (event, ui) {
           let belongto = ui.draggable.attr('belongto');
           let type = ui.draggable.attr('type');
+          let name = ui.draggable.attr('name');
 
           that.$emit('selectTool', 'drag');
 
-          that.$emit('findNodeConfig', belongto, type, node => {
+          that.$emit('findNodeConfig', belongto, type, name, node => {
             if (!node) {
               that.$message.error('未知的节点类型！');
               return;
@@ -164,9 +170,9 @@ export default {
     mousedownHandler (e) {
       const that = this;
 
-      let event = window.event || e;
+      let event = e;
 
-      if (event.button == 0) {
+      if (event.button === 0) {
         if (that.container.dragFlag) {
           that.mouse.tempPos = that.mouse.position;
           that.container.draging = true;
@@ -182,20 +188,30 @@ export default {
     mousemoveHandler (e) {
       const that = this;
 
-      let event = window.event || e;
+      let event = e;
 
-      if (event.target.id == 'flowContainer') {
+      if (event.target.id === 'flowContainer') {
         that.mouse.position = {
           x: event.offsetX,
           y: event.offsetY
         };
       } else {
-        let cn = event.target.className;
-        let tn = event.target.tagName;
-        if (cn != 'lane-text' && cn != 'lane-text-div' && tn != 'svg' && tn != 'path' && tn != 'I') {
-          that.mouse.position.x = event.target.offsetLeft + event.offsetX;
-          that.mouse.position.y = event.target.offsetTop + event.offsetY;
+        // let cn = event.target.className;
+        // let tn = event.target.tagName;
+        // if (cn !== 'lane-text' && cn !== 'lane-text-div' && tn !== 'svg' && tn !== 'path' && tn !== 'I') {
+        //   that.mouse.position.x = event.target.offsetLeft + event.offsetX;
+        //   that.mouse.position.y = event.target.offsetTop + event.offsetY;
+        // }
+        let xTemp = event.offsetX;
+        let yTemp = event.offsetY;
+        let eleTemp = event.target;
+        while (eleTemp.id !== 'flowContainer') {
+          xTemp += eleTemp.offsetLeft;
+          yTemp += eleTemp.offsetTop;
+          eleTemp = eleTemp.offsetParent;
         }
+        that.mouse.position.x = xTemp;
+        that.mouse.position.y = yTemp;
       }
       if (that.container.draging) {
         let nTop = that.container.pos.top + (that.mouse.position.y - that.mouse.tempPos.y);
@@ -263,7 +279,7 @@ export default {
       let event = window.event || e;
 
       if (that.container.scaleFlag) {
-        if (that.browserType == 2) {
+        if (that.browserType === 2) {
           if (event.detail < 0) {
             that.enlargeContainer();
           } else {
@@ -368,7 +384,7 @@ export default {
       let baseY = selectGroup[0].y;
       for (let i = 1; i < selectGroup.length; i++) {
         baseY = baseY + selectGroup[i - 1].height + flowConfig.defaultStyle.alignSpacing.vertical;
-        let f = nodeList.filter(n => n.id == selectGroup[i].id)[0];
+        let f = nodeList.filter(n => n.id === selectGroup[i].id)[0];
         f.tx = baseX;
         f.ty = baseY;
         that.plumb.animate(selectGroup[i].id, {top: baseY, left: baseX}, {
@@ -392,7 +408,7 @@ export default {
       for (let i = 1; i < selectGroup.length; i++) {
         baseY = baseY + selectGroup[i - 1].height + flowConfig.defaultStyle.alignSpacing.vertical;
         baseX = firstX + ZFSN.div(selectGroup[0].width, 2) - ZFSN.div(selectGroup[i].width, 2);
-        let f = nodeList.filter(n => n.id == selectGroup[i].id)[0];
+        let f = nodeList.filter(n => n.id === selectGroup[i].id)[0];
         f.tx = baseX;
         f.ty = baseY;
         that.plumb.animate(selectGroup[i].id, {top: baseY, left: baseX}, {
@@ -416,7 +432,7 @@ export default {
       for (let i = 1; i < selectGroup.length; i++) {
         baseY = baseY + selectGroup[i - 1].height + flowConfig.defaultStyle.alignSpacing.vertical;
         baseX = firstX + selectGroup[0].width - selectGroup[i].width;
-        let f = nodeList.filter(n => n.id == selectGroup[i].id)[0];
+        let f = nodeList.filter(n => n.id === selectGroup[i].id)[0];
         f.tx = baseX;
         f.ty = baseY;
         that.plumb.animate(selectGroup[i].id, {top: baseY, left: baseX}, {
@@ -438,7 +454,7 @@ export default {
       let baseY = selectGroup[0].y;
       for (let i = 1; i < selectGroup.length; i++) {
         baseX = baseX + selectGroup[i - 1].width + flowConfig.defaultStyle.alignSpacing.level;
-        let f = nodeList.filter(n => n.id == selectGroup[i].id)[0];
+        let f = nodeList.filter(n => n.id === selectGroup[i].id)[0];
         f.tx = baseX;
         f.ty = baseY;
         that.plumb.animate(selectGroup[i].id, {top: baseY, left: baseX}, {
@@ -462,7 +478,7 @@ export default {
       for (let i = 1; i < selectGroup.length; i++) {
         baseY = firstY + ZFSN.div(selectGroup[0].height, 2) - ZFSN.div(selectGroup[i].height, 2);
         baseX = baseX + selectGroup[i - 1].width + flowConfig.defaultStyle.alignSpacing.level;
-        let f = nodeList.filter(n => n.id == selectGroup[i].id)[0];
+        let f = nodeList.filter(n => n.id === selectGroup[i].id)[0];
         f.tx = baseX;
         f.ty = baseY;
         that.plumb.animate(selectGroup[i].id, {top: baseY, left: baseX}, {
@@ -486,7 +502,7 @@ export default {
       for (let i = 1; i < selectGroup.length; i++) {
         baseY = firstY + selectGroup[0].height - selectGroup[i].height;
         baseX = baseX + selectGroup[i - 1].width + flowConfig.defaultStyle.alignSpacing.level;
-        let f = nodeList.filter(n => n.id == selectGroup[i].id)[0];
+        let f = nodeList.filter(n => n.id === selectGroup[i].id)[0];
         f.tx = baseX;
         f.ty = baseY;
         that.plumb.animate(selectGroup[i].id, {top: baseY, left: baseX}, {
@@ -533,10 +549,10 @@ export default {
       arr.forEach(function (c, index) {
         let conns = that.getConnectionsByNodeId(c.id);
         conns.forEach(function (conn, index) {
-          linkList.splice(linkList.findIndex(link => (link.sourceId == conn.sourceId || link.targetId == conn.targetId)), 1);
+          linkList.splice(linkList.findIndex(link => (link.sourceId === conn.sourceId || link.targetId === conn.targetId)), 1);
         });
         that.plumb.deleteEveryEndpoint();
-        let inx = nodeList.findIndex(node => node.id == c.id);
+        let inx = nodeList.findIndex(node => node.id === c.id);
         nodeList.splice(inx, 1);
         that.$nextTick(() => {
           linkList.forEach(function (link, index) {
@@ -557,7 +573,7 @@ export default {
                 strokeWidth: link.cls.linkThickness
               }
             });
-            if (link.label != '') {
+            if (link.label !== '') {
               conn.setLabel({
                 label: link.label,
                 cssClass: 'linkLabel'
@@ -580,19 +596,25 @@ export default {
       let newNode = Object.assign({}, node);
       newNode.id = newNode.type + '-' + ZFSN.getId();
       newNode.height = 50;
-      if (newNode.type == 'start' || newNode.type == 'end' ||
-        newNode.type == 'event' || newNode.type == 'gateway') {
+      newNode.y = y - 25;
+      if (newNode.type === 'start' || newNode.type === 'end' ||
+        newNode.type === 'event' || newNode.type === 'gateway') {
         newNode.x = x - 25;
         newNode.width = 50;
+      } else if (newNode.type === 'common') {
+        console.log(x, y);
+        newNode.x = x - 100;
+        newNode.y = y - 100;
+        newNode.height = 200;
+        newNode.width = 200;
       } else {
         newNode.x = x - 60;
         newNode.width = 120;
       }
-      newNode.y = y - 25;
-      if (newNode.type == 'x-lane') {
+      if (newNode.type === 'x-lane') {
         newNode.height = 200;
         newNode.width = 600;
-      } else if (newNode.type == 'y-lane') {
+      } else if (newNode.type === 'y-lane') {
         newNode.height = 600;
         newNode.width = 200;
       }
@@ -613,9 +635,9 @@ export default {
 
       that.selectContainer();
       let toolType = that.currentTool.type;
-      if (toolType == 'zoom-in') {
+      if (toolType === 'zoom-in') {
         that.enlargeContainer();
-      } else if (toolType == 'zoom-out') {
+      } else if (toolType === 'zoom-out') {
         that.narrowContainer();
       }
     },
@@ -633,7 +655,7 @@ export default {
       that.currentSelectGroup.forEach(function (node, index) {
         let l = parseInt($('#' + node.id).css('left'));
         let t = parseInt($('#' + node.id).css('top'));
-        let f = nodeList.filter(n => n.id == node.id)[0];
+        let f = nodeList.filter(n => n.id === node.id)[0];
         f.x = l;
         f.y = t;
       });
@@ -646,7 +668,7 @@ export default {
         let elId = e.el.id;
         let nodeList = that.flowData.nodeList;
         nodeList.forEach(function (node, index) {
-          if (elId != node.id) {
+          if (elId !== node.id) {
             let dis = flowConfig.defaultStyle.showAuxiliaryLineDistance,
               elPos = e.pos,
               elH = e.el.offsetHeight,
@@ -657,7 +679,7 @@ export default {
               that.container.auxiliaryLine.isShowYLine = true;
               that.auxiliaryLinePos.x = node.x + that.container.pos.left;
               let nodeMidPointX = node.x + (node.width / 2);
-              if (nodeMidPointX == (elPos[0] + (elW / 2))) {
+              if (nodeMidPointX === (elPos[0] + (elW / 2))) {
                 that.auxiliaryLinePos.x = nodeMidPointX + that.container.pos.left;
               }
             }
@@ -665,7 +687,7 @@ export default {
               that.container.auxiliaryLine.isShowXLine = true;
               that.auxiliaryLinePos.y = node.y + that.container.pos.top;
               let nodeMidPointY = node.y + (node.height / 2);
-              if (nodeMidPointY == (elPos[1] + (elH / 2))) {
+              if (nodeMidPointY === (elPos[1] + (elH / 2))) {
                 that.auxiliaryLinePos.y = nodeMidPointY + that.container.pos.left;
               }
             }
@@ -687,11 +709,11 @@ export default {
   watch: {
     select (val) {
       this.currentSelect = val;
-      if (this.tempLinkId != '') {
+      if (this.tempLinkId !== '') {
         $('#' + this.tempLinkId).removeClass('link-active');
         this.tempLinkId = '';
       }
-      if (this.currentSelect.type == 'link') {
+      if (this.currentSelect.type === 'link') {
         this.tempLinkId = this.currentSelect.id;
         $('#' + this.currentSelect.id).addClass('link-active');
       }

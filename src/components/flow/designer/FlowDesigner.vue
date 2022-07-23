@@ -17,7 +17,7 @@
                     v-for="(tool, index) in field.tools"
                     :key="index"
                     :icon="tool.icon"
-                    :type="currentTool.type == tool.type ? 'primary': 'default'"
+                    :type="currentTool.type === tool.type ? 'primary': 'default'"
                     @click="selectTool(tool.type)">
                   </a-button>
                 </a-button-group>
@@ -32,37 +32,45 @@
               :grid="{ gutter: 8, column: 2 }"
               v-if="tag.commonNodeShow">
               <a-list-item v-for="(commonNode, index) in field.commonNodes" :key="index">
-                <div class="node-item" :type="commonNode.type" belongto="commonNodes">
-                  <a-icon :component="commonNode.icon"/>
-                  {{ commonNode.nodeName }}
+                <div class="node-item-common" :type="commonNode.type" :name="commonNode.nodeName" belongto="commonNodes">
+<!--                  {{ commonNode.nodeName }}-->
+                  <img :src="commonNode.image" width="100%" height="120px" style="object-fit:contain">
+                  <div style="background-color: #e4e6ec; padding: 5px 0"> {{ commonNode.nodeName }} </div>
+                </div>
+              </a-list-item>
+              <a-list-item>
+                <div class="add-node">
+                  <div class="add-node-text">
+                    <a-icon type="plus"/>
+                  </div>
                 </div>
               </a-list-item>
             </a-list>
           </div>
         </a-row>
+<!--        <a-row>-->
+<!--          <a-checkable-tag v-model="tag.checked2" @change="toggleNodeShow2" class="tag">高级节点</a-checkable-tag>-->
+<!--          <div align="center">-->
+<!--            <a-list-->
+<!--              :grid="{ gutter: 8, column: 2 }"-->
+<!--              v-if="tag.highNodeShow">-->
+<!--              <a-list-item v-for="(highNode, index) in field.highNodes" :key="index">-->
+<!--                <div class="node-item" :type="highNode.type" :name="highNode.nodeName" belongto="highNodes">-->
+<!--                  <a-icon :component="highNode.icon"/>-->
+<!--                  {{ highNode.nodeName }}-->
+<!--                </div>-->
+<!--              </a-list-item>-->
+<!--            </a-list>-->
+<!--          </div>-->
+<!--        </a-row>-->
         <a-row>
-          <a-checkable-tag v-model="tag.checked2" @change="toggleNodeShow2" class="tag">高级节点</a-checkable-tag>
-          <div align="center">
-            <a-list
-              :grid="{ gutter: 8, column: 2 }"
-              v-if="tag.highNodeShow">
-              <a-list-item v-for="(highNode, index) in field.highNodes" :key="index">
-                <div class="node-item" :type="highNode.type" belongto="highNodes">
-                  <a-icon :component="highNode.icon"/>
-                  {{ highNode.nodeName }}
-                </div>
-              </a-list-item>
-            </a-list>
-          </div>
-        </a-row>
-        <a-row>
-          <a-checkable-tag v-model="tag.checked3" @change="toggleNodeShow3" class="tag">泳道节点</a-checkable-tag>
+          <a-checkable-tag v-model="tag.checked3" @change="toggleNodeShow3" class="tag">大棚</a-checkable-tag>
           <div align="center">
             <a-list
               :grid="{ gutter: 8, column: 2 }"
               v-if="tag.laneNodeShow">
               <a-list-item v-for="(laneNode, index) in field.laneNodes" :key="index">
-                <div class="node-item" :type="laneNode.type" belongto="laneNodes">
+                <div class="node-item" :type="laneNode.type" :name="laneNode.nodeName" belongto="laneNodes">
                   <a-icon :component="laneNode.icon"/>
                   {{ laneNode.nodeName }}
                 </div>
@@ -131,12 +139,9 @@
             @deleteLink="deleteLink">
           </vue-context-menu>
         </a-layout-content>
-        <a-layout-footer class="foot">
-          <span>VDF {{ info.version }}, Powered by {{ info.author }}</span>
-        </a-layout-footer>
       </a-layout>
       <a-layout-sider
-        width="350"
+        width="300"
         theme="light"
         class="attr-area"
         @mousedown.stop="loseShortcut">
@@ -361,7 +366,7 @@ export default {
       const that = this;
 
       that.browserType = that.getBrowserType();
-      if (that.browserType == 2) {
+      if (that.browserType === 2) {
         flowConfig.shortcut.scaleContainer = {
           code: 16,
           codeName: 'SHIFT(chrome下为ALT)',
@@ -378,8 +383,8 @@ export default {
         let sourceId = info.sourceId;
         let targetId = info.targetId;
 
-        if (sourceId == targetId) return false;
-        let filter = that.flowData.linkList.filter(link => (link.sourceId == sourceId && link.targetId == targetId));
+        if (sourceId === targetId) return false;
+        let filter = that.flowData.linkList.filter(link => (link.sourceId === sourceId && link.targetId === targetId));
         if (filter.length > 0) {
           that.$message.error('同方向的两节点连线只能有一条！');
           return false;
@@ -389,11 +394,12 @@ export default {
 
       that.plumb.bind('connection', function (conn, e) {
         let connObj = conn.connection.canvas;
+        // eslint-disable-next-line one-var
         let o = {}, id, label;
-        if (that.flowData.status == flowConfig.flowStatus.CREATE || that.flowData.status == flowConfig.flowStatus.MODIFY) {
+        if (that.flowData.status === flowConfig.flowStatus.CREATE || that.flowData.status === flowConfig.flowStatus.MODIFY) {
           id = 'link-' + ZFSN.getId();
           label = '';
-        } else if (that.flowData.status == flowConfig.flowStatus.LOADING) {
+        } else if (that.flowData.status === flowConfig.flowStatus.LOADING) {
           let l = that.flowData.linkList[that.flowData.linkList.length - 1];
           id = l.id;
           label = l.label;
@@ -411,14 +417,14 @@ export default {
         };
         $('#' + id).bind('contextmenu', function (e) {
           that.showLinkContextMenu(e);
-          that.currentSelect = that.flowData.linkList.filter(l => l.id == id)[0];
+          that.currentSelect = that.flowData.linkList.filter(l => l.id === id)[0];
         });
         $('#' + id).bind('click', function (e) {
           let event = window.event || e;
           event.stopPropagation();
-          that.currentSelect = that.flowData.linkList.filter(l => l.id == id)[0];
+          that.currentSelect = that.flowData.linkList.filter(l => l.id === id)[0];
         });
-        if (that.flowData.status != flowConfig.flowStatus.LOADING) that.flowData.linkList.push(o);
+        if (that.flowData.status !== flowConfig.flowStatus.LOADING) that.flowData.linkList.push(o);
       });
 
       that.plumb.importDefaults({
@@ -437,7 +443,20 @@ export default {
             left: 60
           },
           containment: 'window',
-          revert: 'invalid'
+          revert: 'invalid',
+          scroll: false
+        });
+        $('.node-item-common').draggable({
+          opacity: flowConfig.defaultStyle.dragOpacity,
+          helper: 'clone',
+          cursorAt: {
+            top: 60,
+            left: 60
+          },
+          containment: 'window',
+          revert: 'invalid',
+          scroll: false,
+          zIndex: 9999
         });
         ZFSN.consoleLog(['初始化节点选择列表成功...']);
       });
@@ -503,12 +522,12 @@ export default {
         let event = window.event || e;
 
         let key = event.keyCode;
-        if (key == flowConfig.shortcut.dragContainer.code) {
+        if (key === flowConfig.shortcut.dragContainer.code) {
           that.$refs.flowArea.container.dragFlag = false;
-        } else if (key == flowConfig.shortcut.scaleContainer.code) {
+        } else if (key === flowConfig.shortcut.scaleContainer.code) {
           event.preventDefault();
           that.$refs.flowArea.container.scaleFlag = false;
-        } else if (key == flowConfig.shortcut.multiple.code) {
+        } else if (key === flowConfig.shortcut.multiple.code) {
           that.$refs.flowArea.rectangleMultiple.flag = false;
         }
       }
@@ -527,7 +546,7 @@ export default {
     initFlow () {
       const that = this;
 
-      if (that.flowData.status == flowConfig.flowStatus.CREATE) {
+      if (that.flowData.status === flowConfig.flowStatus.CREATE) {
         that.flowData.attr.id = 'flow-' + ZFSN.getId();
       } else {
         that.loadFlow();
@@ -568,7 +587,7 @@ export default {
                 strokeWidth: link.cls.linkThickness
               }
             });
-            if (link.label != '') {
+            if (link.label !== '') {
               conn.setLabel({
                 label: link.label,
                 cssClass: 'linkLabel'
@@ -586,24 +605,24 @@ export default {
         left: -canvasSize.minX + 100
       }
     },
-    findNodeConfig (belongto, type, callback) {
+    findNodeConfig (belongto, type, name, callback) {
       let node = null;
       switch (belongto) {
         case 'commonNodes':
-          node = commonNodes.filter(n => n.type == type);
+          node = commonNodes.filter(n => (n.type === type && n.nodeName === name));
           break;
         case 'highNodes':
-          node = highNodes.filter(n => n.type == type);
+          node = highNodes.filter(n => (n.type === type && n.nodeName === name));
           break;
         case 'laneNodes':
-          node = laneNodes.filter(n => n.type == type);
+          node = laneNodes.filter(n => (n.type === type && n.nodeName === name));
           break;
       }
       if (node && node.length >= 0) node = node[0];
       callback(node);
     },
     selectTool (type) {
-      let tool = tools.filter(t => t.type == type);
+      let tool = tools.filter(t => t.type === type);
       if (tool && tool.length >= 0) this.currentTool = tool[0];
 
       switch (type) {
@@ -629,7 +648,7 @@ export default {
         if (!f) {
           that.plumb.toggleDraggable(node.id);
         }
-        if (node.type != 'x-lane' && node.type != 'y-lane') {
+        if (node.type !== 'x-lane' && node.type !== 'y-lane') {
           that.plumb.unmakeSource(node.id);
           that.plumb.unmakeTarget(node.id);
         }
@@ -643,7 +662,7 @@ export default {
         if (f) {
           that.plumb.toggleDraggable(node.id);
         }
-        if (node.type != 'x-lane' && node.type != 'y-lane') {
+        if (node.type !== 'x-lane' && node.type !== 'y-lane') {
           that.plumb.makeSource(node.id, flowConfig.jsPlumbConfig.makeSourceConfig);
           that.plumb.makeTarget(node.id, flowConfig.jsPlumbConfig.makeTargetConfig);
         }
@@ -684,6 +703,7 @@ export default {
 
       if (!that.checkFlow()) return;
 
+      // eslint-disable-next-line one-var
       let $Container = that.$refs.flowArea.$el.children[0],
         svgElems = $($Container).find('svg[id^="link-"]'),
         removeArr = [];
@@ -818,7 +838,7 @@ export default {
         target: targetId
       })[0]);
       let linkList = that.flowData.linkList;
-      linkList.splice(linkList.findIndex(link => (link.sourceId == sourceId || link.targetId == targetId)), 1);
+      linkList.splice(linkList.findIndex(link => (link.sourceId === sourceId || link.targetId === targetId)), 1);
       that.currentSelect = {};
     },
     loseShortcut () {
@@ -837,6 +857,7 @@ export default {
     moveNode (type) {
       const that = this;
 
+      // eslint-disable-next-line one-var
       let m = flowConfig.defaultStyle.movePx, isX = true;
       switch (type) {
         case 'left':
