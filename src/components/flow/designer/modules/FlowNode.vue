@@ -36,8 +36,8 @@
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
 <!--    <a-icon type="user" class="node-icon"/>-->
-    <img :src="node.image" width="100%" height="85%" style="object-fit:contain">
-    <div style="height: 15%"> {{ node.nodeName }} </div>
+    <img :src="node.image" width="100%" height="80%" style="object-fit:contain">
+    <div style="height: 20%"> {{ node.nodeName }} </div>
   </div>
 
   <div v-else-if="node.type === 'freedom'"
@@ -175,8 +175,8 @@ export default {
         }
       });
       $('#' + that.node.id).resizable({
-        minHeight: 200,
-        minWidth: 200,
+        minHeight: 120,
+        minWidth: 120,
         maxHeight: 2000,
         maxWidth: 2000,
         ghost: true,

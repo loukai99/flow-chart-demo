@@ -197,21 +197,22 @@ export default {
         };
       } else {
         // let cn = event.target.className;
-        // let tn = event.target.tagName;
-        // if (cn !== 'lane-text' && cn !== 'lane-text-div' && tn !== 'svg' && tn !== 'path' && tn !== 'I') {
-        //   that.mouse.position.x = event.target.offsetLeft + event.offsetX;
-        //   that.mouse.position.y = event.target.offsetTop + event.offsetY;
-        // }
-        let xTemp = event.offsetX;
-        let yTemp = event.offsetY;
-        let eleTemp = event.target;
-        while (eleTemp.id !== 'flowContainer') {
-          xTemp += eleTemp.offsetLeft;
-          yTemp += eleTemp.offsetTop;
-          eleTemp = eleTemp.offsetParent;
+        let tn = event.target.tagName;
+        if (tn !== 'svg' && tn !== 'path' && tn !== 'I' && tn !== 'circle') {
+          let xTemp = event.offsetX;
+          let yTemp = event.offsetY;
+          let eleTemp = event.target;
+          while (eleTemp.id !== 'flowContainer') {
+            if (eleTemp.offsetLeft === undefined) {
+              console.log(eleTemp);
+            }
+            xTemp += eleTemp.offsetLeft;
+            yTemp += eleTemp.offsetTop;
+            eleTemp = eleTemp.offsetParent ? eleTemp.offsetParent : eleTemp.parentNode;
+          }
+          that.mouse.position.x = xTemp;
+          that.mouse.position.y = yTemp;
         }
-        that.mouse.position.x = xTemp;
-        that.mouse.position.y = yTemp;
       }
       if (that.container.draging) {
         let nTop = that.container.pos.top + (that.mouse.position.y - that.mouse.tempPos.y);
@@ -602,11 +603,11 @@ export default {
         newNode.x = x - 25;
         newNode.width = 50;
       } else if (newNode.type === 'common') {
-        console.log(x, y);
-        newNode.x = x - 100;
-        newNode.y = y - 100;
-        newNode.height = 200;
-        newNode.width = 200;
+        console.log(x, y)
+        newNode.x = x - 60;
+        newNode.y = y - 60;
+        newNode.height = 120;
+        newNode.width = 120;
       } else {
         newNode.x = x - 60;
         newNode.width = 120;
