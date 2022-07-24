@@ -178,7 +178,7 @@ export default {
         source: that.currentSelect.sourceId,
         target: that.currentSelect.targetId
       })[0];
-      if (label != '') {
+      if (label !== '') {
         conn.setLabel({
           label: label,
           cssClass: 'linkLabel'
@@ -192,7 +192,7 @@ export default {
   watch: {
     select (val) {
       this.currentSelect = val;
-      if (this.currentSelect.type == 'link') {
+      if (this.currentSelect.type === 'link') {
         this.activeKey = 'link-attr';
       } else if (!this.currentSelect.type) {
         this.activeKey = 'flow-attr';

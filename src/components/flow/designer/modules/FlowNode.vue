@@ -35,9 +35,9 @@
     																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
        @contextmenu.stop="showNodeContextMenu">
-<!--    <a-icon type="user" class="node-icon"/>-->
+    <!--    <a-icon type="user" class="node-icon"/>-->
     <img :src="node.image" width="100%" height="80%" style="object-fit:contain">
-    <div style="height: 20%"> {{ node.nodeName }} </div>
+    <div style="height: 20%"> {{ node.nodeName }}</div>
   </div>
 
   <div v-else-if="node.type === 'freedom'"
@@ -137,17 +137,17 @@ export default {
   components: {
     jsplumb
   },
-  mounted () {
+  mounted() {
     this.registerNode();
   },
-  data () {
+  data() {
     return {
       currentSelect: this.select,
       currentSelectGroup: this.selectGroup
     }
   },
   methods: {
-    registerNode () {
+    registerNode() {
       const that = this;
 
       that.plumb.draggable(that.node.id, {
@@ -189,7 +189,7 @@ export default {
       that.currentSelect = that.node;
       that.currentSelectGroup = [];
     },
-    selectNode () {
+    selectNode() {
       const that = this;
       that.currentSelect = this.node;
       that.$emit('isMultiple', flag => {
@@ -204,11 +204,11 @@ export default {
         }
       });
     },
-    showNodeContextMenu (e) {
+    showNodeContextMenu(e) {
       this.$emit('showNodeContextMenu', e);
       this.selectNode();
     },
-    isActive () {
+    isActive() {
       const that = this;
       if (that.currentSelect.id === that.node.id) return true;
       let f = that.currentSelectGroup.filter(n => n.id === that.node.id);
@@ -217,20 +217,20 @@ export default {
     }
   },
   watch: {
-    select (val) {
+    select(val) {
       this.currentSelect = val;
     },
     currentSelect: {
-      handler (val) {
+      handler(val) {
         this.$emit('update:select', val);
       },
       deep: true
     },
-    selectGroup (val) {
+    selectGroup(val) {
       this.currentSelectGroup = val;
     },
     currentSelectGroup: {
-      handler (val) {
+      handler(val) {
         this.$emit('update:selectGroup', val);
       },
       deep: true

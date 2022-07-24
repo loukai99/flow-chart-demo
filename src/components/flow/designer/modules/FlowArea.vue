@@ -670,6 +670,7 @@ export default {
         let nodeList = that.flowData.nodeList;
         nodeList.forEach(function (node, index) {
           if (elId !== node.id) {
+            // eslint-disable-next-line one-var
             let dis = flowConfig.defaultStyle.showAuxiliaryLineDistance,
               elPos = e.pos,
               elH = e.el.offsetHeight,
@@ -740,5 +741,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../style/flow-area.scss'
+@import '../style/flow-area.scss';
 </style>

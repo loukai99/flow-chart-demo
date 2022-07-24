@@ -32,10 +32,11 @@
               :grid="{ gutter: 8, column: 2 }"
               v-if="tag.commonNodeShow">
               <a-list-item v-for="(commonNode, index) in field.commonNodes" :key="index">
-                <div class="node-item-common" :type="commonNode.type" :name="commonNode.nodeName" belongto="commonNodes">
-<!--                  {{ commonNode.nodeName }}-->
+                <div class="node-item-common" :type="commonNode.type" :name="commonNode.nodeName"
+                     belongto="commonNodes">
+                  <!--                  {{ commonNode.nodeName }}-->
                   <img :src="commonNode.image" width="100%" height="120px" style="object-fit:contain">
-                  <div style="background-color: #e4e6ec; padding: 5px 0"> {{ commonNode.nodeName }} </div>
+                  <div style="background-color: #e4e6ec; padding: 5px 0"> {{ commonNode.nodeName }}</div>
                 </div>
               </a-list-item>
               <a-list-item>
@@ -48,21 +49,21 @@
             </a-list>
           </div>
         </a-row>
-<!--        <a-row>-->
-<!--          <a-checkable-tag v-model="tag.checked2" @change="toggleNodeShow2" class="tag">高级节点</a-checkable-tag>-->
-<!--          <div align="center">-->
-<!--            <a-list-->
-<!--              :grid="{ gutter: 8, column: 2 }"-->
-<!--              v-if="tag.highNodeShow">-->
-<!--              <a-list-item v-for="(highNode, index) in field.highNodes" :key="index">-->
-<!--                <div class="node-item" :type="highNode.type" :name="highNode.nodeName" belongto="highNodes">-->
-<!--                  <a-icon :component="highNode.icon"/>-->
-<!--                  {{ highNode.nodeName }}-->
-<!--                </div>-->
-<!--              </a-list-item>-->
-<!--            </a-list>-->
-<!--          </div>-->
-<!--        </a-row>-->
+        <!--        <a-row>-->
+        <!--          <a-checkable-tag v-model="tag.checked2" @change="toggleNodeShow2" class="tag">高级节点</a-checkable-tag>-->
+        <!--          <div align="center">-->
+        <!--            <a-list-->
+        <!--              :grid="{ gutter: 8, column: 2 }"-->
+        <!--              v-if="tag.highNodeShow">-->
+        <!--              <a-list-item v-for="(highNode, index) in field.highNodes" :key="index">-->
+        <!--                <div class="node-item" :type="highNode.type" :name="highNode.nodeName" belongto="highNodes">-->
+        <!--                  <a-icon :component="highNode.icon"/>-->
+        <!--                  {{ highNode.nodeName }}-->
+        <!--                </div>-->
+        <!--              </a-list-item>-->
+        <!--            </a-list>-->
+        <!--          </div>-->
+        <!--        </a-row>-->
         <a-row>
           <a-checkable-tag v-model="tag.checked3" @change="toggleNodeShow3" class="tag">大棚</a-checkable-tag>
           <div align="center">
@@ -232,24 +233,24 @@ export default {
     that.initFlow();
     that.listenPage();
 
-    setTimeout(function () {
-      ZFSN.consoleLog([
-        '欢迎使用VFD流程设计器!',
-        '当前版本：' + that.info.version,
-        'Powered by ' + that.info.author,
-        '码云：' + that.info.gitee
-      ]);
-      that.$notification.open({
-        placement: 'bottomRight',
-        message: '欢迎使用VFD流程设计器!',
-        description: <p>
-          当前版本：1.0.5<br/>
-          Powered by ZSFN<br/>
-          码云：<a target="blank" href="https://gitee.com/yjblogs/VFD">VFD流程设计器</a>
-        </p>,
-        icon: <a-icon type="smile" style="color: #108ee9"/>
-      });
-    }, 1000);
+    // setTimeout(function () {
+    //   ZFSN.consoleLog([
+    //     '欢迎使用VFD流程设计器!',
+    //     '当前版本：' + that.info.version,
+    //     'Powered by ' + that.info.author,
+    //     '码云：' + that.info.gitee
+    //   ]);
+    //   that.$notification.open({
+    //     placement: 'bottomRight',
+    //     message: '欢迎使用VFD流程设计器!',
+    //     description: <p>
+    //       当前版本：1.0.5<br/>
+    //       Powered by ZSFN<br/>
+    //       码云：<a target="blank" href="https://gitee.com/yjblogs/VFD">VFD流程设计器</a>
+    //     </p>,
+    //     icon: <a-icon type="smile" style="color: #108ee9"/>
+    //   });
+    // }, 1000);
   },
   data () {
     return {
@@ -360,7 +361,6 @@ export default {
         alert('Edge浏览器支持性较差，推荐使用Firefox或Chrome');
         return 6;
       }
-      ;
     },
     dealCompatibility () {
       const that = this;
