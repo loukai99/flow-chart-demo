@@ -444,7 +444,9 @@ export default {
           },
           containment: 'window',
           revert: 'invalid',
-          scroll: false
+          scroll: false,
+          appendTo: '.container',
+          zIndex: 9
         });
         $('.node-item-common').draggable({
           opacity: flowConfig.defaultStyle.dragOpacity,
@@ -456,7 +458,8 @@ export default {
           containment: 'window',
           revert: 'invalid',
           scroll: false,
-          zIndex: 9999
+          appendTo: '.container',
+          zIndex: 9
         });
         ZFSN.consoleLog(['初始化节点选择列表成功...']);
       });
