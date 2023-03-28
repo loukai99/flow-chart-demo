@@ -47,6 +47,28 @@ $common-node-active: #409EFF;
   }
 }
 
+.data-rectangle-node {
+  position: absolute;
+  height: 40px;
+  width: 100px;
+  //line-height: 36;
+  text-align: center;
+  //border: 1px solid #777;
+  //border-radius: 5px;
+  //background-color: $common-node-bg;
+  white-space: nowrap;
+
+  &:hover {
+    //background-color: $common-node-bg-hover;
+    z-index: 2;
+  }
+
+  &.active {
+    outline: 2px dashed $common-node-active;
+    outline-offset: 0px;
+  }
+}
+
 //.common-rectangle-node {
 //    position: absolute;
 //    height: 50px;

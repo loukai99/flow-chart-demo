@@ -56,6 +56,28 @@
             </a-form-item>
           </a-form>
         </template>
+        <template v-if="currentSelect.type == 'baseData'">
+          <a-form layout="horizontal">
+            <a-form-item label="类型" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
+              <a-tag color="purple">{{ currentSelect.type }}</a-tag>
+            </a-form-item>
+            <a-form-item label="id" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
+              <a-input :value="currentSelect.id" disabled/>
+            </a-form-item>
+            <a-form-item label="名称" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
+              <a-input placeholder="请输入节点名称" :value="currentSelect.nodeName" @change="nodeNameChange"/>
+            </a-form-item>
+            <a-form-item label="请求类型" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
+              <a-radio-group  :value="currentSelect.apiType" @change="nodeApiTypeChange">
+                <a-radio-button value="get">get</a-radio-button>
+                <a-radio-button value="post">post</a-radio-button>
+              </a-radio-group>
+            </a-form-item>
+            <a-form-item label="api" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
+              <a-input placeholder="数据api" :value="currentSelect.api" @change="nodeApiChange"/>
+            </a-form-item>
+          </a-form>
+        </template>
         <template v-else-if="currentSelect.type == 'freedom'">
           <a-form layout="horizontal">
             <a-form-item label="类型" :label-col="formItemLayout.labelCol" :wrapper-col="formItemLayout.wrapperCol">
@@ -168,6 +190,12 @@ export default {
   methods: {
     nodeNameChange (e) {
       this.currentSelect.nodeName = e.target.value;
+    },
+    nodeApiTypeChange (e) {
+      this.currentSelect.apiType = e.target.value;
+    },
+    nodeApiChange (e) {
+      this.currentSelect.api = e.target.value;
     },
     linkLabelChange (e) {
       const that = this;

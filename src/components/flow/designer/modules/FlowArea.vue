@@ -571,7 +571,8 @@ export default {
               ],
               paintStyle: {
                 stroke: link.cls.linkColor,
-                strokeWidth: link.cls.linkThickness
+                strokeWidth: link.cls.linkThickness,
+                dashstyle: link.cls.linkDash
               }
             });
             if (link.label !== '') {
@@ -603,12 +604,12 @@ export default {
         newNode.x = x - 25;
         newNode.width = 50;
       } else if (newNode.type === 'common') {
-        console.log(x, y)
         newNode.x = x - 60;
         newNode.y = y - 60;
         newNode.height = 120;
         newNode.width = 120;
       } else {
+        console.log(x, y)
         newNode.x = x - 60;
         newNode.width = 120;
       }

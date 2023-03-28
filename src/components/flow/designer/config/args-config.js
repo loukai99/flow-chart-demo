@@ -20,7 +20,8 @@ export let flowConfig = {
     ],
     PaintStyle: {
       stroke: '#2a2929',
-      strokeWidth: 2
+      strokeWidth: 2,
+      dashstyle: ''
     },
     HoverPaintStyle: {
       stroke: '#409EFF',

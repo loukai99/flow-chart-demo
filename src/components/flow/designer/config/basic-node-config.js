@@ -6,8 +6,13 @@ export const tools = [
   },
   {
     type: 'connection',
-    icon: 'fork',
-    name: '连线'
+    icon: 'minus',
+    name: '连线-实线'
+  },
+  {
+    type: 'connection-dash',
+    icon: 'dash',
+    name: '连线-虚线'
   },
   {
     type: 'zoom-in',
@@ -87,5 +92,15 @@ export const laneNodes = [
     type: 'y-lane',
     nodeName: '纵向大棚',
     icon: 'YLaneIcon'
+  }
+];
+
+export const dataNodes = [
+  {
+    type: 'baseData',
+    nodeName: '基础数据显示',
+    icon: '',
+    apiType: 'get',
+    api: 'https://test.xyz/'
   }
 ];

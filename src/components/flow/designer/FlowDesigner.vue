@@ -39,11 +39,34 @@
                   <div style="background-color: #e4e6ec; padding: 5px 0"> {{ commonNode.nodeName }}</div>
                 </div>
               </a-list-item>
-              <a-list-item>
-                <div class="add-node">
-                  <div class="add-node-text">
-                    <a-icon type="plus"/>
-                  </div>
+            </a-list>
+          </div>
+        </a-row>
+        <a-row>
+          <a-checkable-tag v-model="tag.checked2" @change="toggleNodeShow2" class="tag">数据节点</a-checkable-tag>
+          <div align="center">
+            <a-list
+              :grid="{ gutter: 8, column: 2 }"
+              v-if="tag.dataNodeShow">
+              <a-list-item v-for="(dataNode, index) in field.dataNodes" :key="index">
+                <div class="node-item" :type="dataNode.type" :name="dataNode.nodeName" belongto="dataNodes">
+                  <a-icon :component="dataNode.icon"/>
+                  {{ dataNode.nodeName }}
+                </div>
+              </a-list-item>
+            </a-list>
+          </div>
+        </a-row>
+        <a-row>
+          <a-checkable-tag v-model="tag.checked3" @change="toggleNodeShow3" class="tag">大棚</a-checkable-tag>
+          <div align="center">
+            <a-list
+              :grid="{ gutter: 8, column: 2 }"
+              v-if="tag.laneNodeShow">
+              <a-list-item v-for="(laneNode, index) in field.laneNodes" :key="index">
+                <div class="node-item" :type="laneNode.type" :name="laneNode.nodeName" belongto="laneNodes">
+                  <a-icon :component="laneNode.icon"/>
+                  {{ laneNode.nodeName }}
                 </div>
               </a-list-item>
             </a-list>
@@ -64,21 +87,7 @@
         <!--            </a-list>-->
         <!--          </div>-->
         <!--        </a-row>-->
-        <a-row>
-          <a-checkable-tag v-model="tag.checked3" @change="toggleNodeShow3" class="tag">大棚</a-checkable-tag>
-          <div align="center">
-            <a-list
-              :grid="{ gutter: 8, column: 2 }"
-              v-if="tag.laneNodeShow">
-              <a-list-item v-for="(laneNode, index) in field.laneNodes" :key="index">
-                <div class="node-item" :type="laneNode.type" :name="laneNode.nodeName" belongto="laneNodes">
-                  <a-icon :component="laneNode.icon"/>
-                  {{ laneNode.nodeName }}
-                </div>
-              </a-list-item>
-            </a-list>
-          </div>
-        </a-row>
+
       </a-layout-sider>
       <a-layout>
         <a-layout-header class="header-option">
@@ -172,7 +181,7 @@
 
 <script>
 import jsplumb from 'jsplumb'
-import {tools, commonNodes, highNodes, laneNodes} from './config/basic-node-config.js'
+import {tools, commonNodes, highNodes, laneNodes, dataNodes} from './config/basic-node-config.js'
 import {flowConfig} from './config/args-config.js'
 import {
   startSvg,
@@ -266,7 +275,7 @@ export default {
         checked3: true,
         toolShow: true,
         commonNodeShow: true,
-        highNodeShow: true,
+        dataNodeShow: true,
         laneNodeShow: true
       },
       browserType: 3,
@@ -274,6 +283,7 @@ export default {
       field: {
         tools: tools,
         commonNodes: commonNodes,
+        dataNodes: dataNodes,
         highNodes: highNodes,
         laneNodes: laneNodes
       },
@@ -325,9 +335,9 @@ export default {
     },
     toggleNodeShow2 (flag) {
       if (!flag) {
-        this.tag.highNodeShow = false;
+        this.tag.dataNodeShow = false;
       } else {
-        this.tag.highNodeShow = true;
+        this.tag.dataNodeShow = true;
       }
     },
     toggleNodeShow3 (flag) {
@@ -343,7 +353,6 @@ export default {
       if (isOpera) {
         return 1;
       }
-      ;
       if (userAgent.indexOf('Firefox') > -1) {
         return 2;
       }
@@ -413,7 +422,8 @@ export default {
         o.cls = {
           linkType: flowConfig.jsPlumbInsConfig.Connector[0],
           linkColor: flowConfig.jsPlumbInsConfig.PaintStyle.stroke,
-          linkThickness: flowConfig.jsPlumbInsConfig.PaintStyle.strokeWidth
+          linkThickness: flowConfig.jsPlumbInsConfig.PaintStyle.strokeWidth,
+          linkDash: flowConfig.jsPlumbInsConfig.PaintStyle.dashstyle
         };
         $('#' + id).bind('contextmenu', function (e) {
           that.showLinkContextMenu(e);
@@ -424,7 +434,9 @@ export default {
           event.stopPropagation();
           that.currentSelect = that.flowData.linkList.filter(l => l.id === id)[0];
         });
-        if (that.flowData.status !== flowConfig.flowStatus.LOADING) that.flowData.linkList.push(o);
+        if (that.flowData.status !== flowConfig.flowStatus.LOADING) {
+          that.flowData.linkList.push(o);
+        }
       });
 
       that.plumb.importDefaults({
@@ -558,7 +570,6 @@ export default {
     },
     loadFlow (json) {
       const that = this;
-
       that.clear();
       let loadData = JSON.parse(json);
       that.flowData.attr = loadData.attr;
@@ -587,7 +598,8 @@ export default {
               ],
               paintStyle: {
                 stroke: link.cls.linkColor,
-                strokeWidth: link.cls.linkThickness
+                strokeWidth: link.cls.linkThickness,
+                dashstyle: link.cls.linkDash
               }
             });
             if (link.label !== '') {
@@ -620,6 +632,9 @@ export default {
         case 'laneNodes':
           node = laneNodes.filter(n => (n.type === type && n.nodeName === name));
           break;
+        case 'dataNodes':
+          node = dataNodes.filter(n => (n.type === type && n.nodeName === name));
+          break;
       }
       if (node && node.length >= 0) node = node[0];
       callback(node);
@@ -634,6 +649,9 @@ export default {
           break;
         case 'connection':
           this.changeToConnection();
+          break;
+        case 'connection-dash':
+          this.changeToConnectionDash();
           break;
         case 'zoom-in':
           this.changeToZoomIn();
@@ -673,6 +691,25 @@ export default {
 
       that.currentSelect = {};
       that.currentSelectGroup = [];
+      flowConfig.jsPlumbInsConfig.PaintStyle.dashstyle = '';
+    },
+    changeToConnectionDash () {
+      const that = this;
+
+      that.flowData.nodeList.forEach(function (node, index) {
+        let f = that.plumb.toggleDraggable(node.id);
+        if (f) {
+          that.plumb.toggleDraggable(node.id);
+        }
+        if (node.type !== 'x-lane' && node.type !== 'y-lane') {
+          that.plumb.makeSource(node.id, flowConfig.jsPlumbConfig.makeSourceConfig);
+          that.plumb.makeTarget(node.id, flowConfig.jsPlumbConfig.makeTargetConfig);
+        }
+      });
+
+      that.currentSelect = {};
+      that.currentSelectGroup = [];
+      flowConfig.jsPlumbInsConfig.PaintStyle.dashstyle = '2 2';
     },
     changeToZoomIn () {
       console.log('切换到放大工具');

@@ -30,7 +30,7 @@
        class="common-rectangle-node"
        :class="{ active: isActive() }"
        :style="{ top: node.y + 'px', left: node.x + 'px',
-    		cursor: currentTool.type === 'drag' ? 'move' : (currentTool.type === 'connection' ? 'crosshair' :
+    		cursor: currentTool.type === 'drag' ? 'move' : ((currentTool.type === 'connection' || currentTool.type === 'connection-dash') ? 'crosshair' :
     																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
     																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
        @click.stop="selectNode"
@@ -38,6 +38,19 @@
     <!--    <a-icon type="user" class="node-icon"/>-->
     <img :src="node.image" width="100%" height="80%" style="object-fit:contain">
     <div style="height: 20%"> {{ node.nodeName }}</div>
+  </div>
+
+  <div v-else-if="node.type === 'baseData'"
+       :id="node.id"
+       class="data-rectangle-node"
+       :class="{ active: isActive() }"
+       :style="{ top: node.y + 'px', left: node.x + 'px',
+    		cursor: currentTool.type === 'drag' ? 'move' : ((currentTool.type === 'connection' || currentTool.type === 'connection-dash') ? 'crosshair' :
+    																								(currentTool.type === 'zoom-in' ? 'zoom-in' :
+    																								(currentTool.type === 'zoom-out' ? 'zoom-out' : 'default'))) }"
+       @click.stop="selectNode"
+       @contextmenu.stop="showNodeContextMenu">
+    <div style="height: 20%"> {{ node.nodeName }}: {{ apiData }}</div>
   </div>
 
   <div v-else-if="node.type === 'freedom'"
@@ -131,29 +144,38 @@ import $ from 'jquery'
 import 'jquery-ui/ui/widgets/draggable'
 import 'jquery-ui/ui/widgets/droppable'
 import 'jquery-ui/ui/widgets/resizable'
+import axios from 'axios'
 
 export default {
   props: ['select', 'selectGroup', 'node', 'plumb', 'currentTool'],
   components: {
     jsplumb
   },
-  mounted() {
+  mounted () {
     this.registerNode();
   },
-  data() {
+  data () {
     return {
+      apiData: '加载中',
       currentSelect: this.select,
       currentSelectGroup: this.selectGroup
     }
   },
   methods: {
-    registerNode() {
+    getNodeData (node) {
+      if (node.apiType === 'get') {
+        axios.get(node.api).then()
+      } else {
+        axios.post(node.api).then()
+      }
+    },
+    registerNode () {
       const that = this;
 
       that.plumb.draggable(that.node.id, {
         containment: 'parent',
         handle: function (e, el) {
-          var possibles = el.parentNode.querySelectorAll('.common-circle-node,.common-rectangle-node,.common-diamond-node,.lane-text-div');
+          var possibles = el.parentNode.querySelectorAll('.data-rectangle-node, .common-circle-node,.common-rectangle-node,.common-diamond-node,.lane-text-div');
           for (var i = 0; i < possibles.length; i++) {
             if (possibles[i] === el || e.target.className === 'lane-text') return true;
           }
@@ -189,7 +211,7 @@ export default {
       that.currentSelect = that.node;
       that.currentSelectGroup = [];
     },
-    selectNode() {
+    selectNode () {
       const that = this;
       that.currentSelect = this.node;
       that.$emit('isMultiple', flag => {
@@ -204,11 +226,11 @@ export default {
         }
       });
     },
-    showNodeContextMenu(e) {
+    showNodeContextMenu (e) {
       this.$emit('showNodeContextMenu', e);
       this.selectNode();
     },
-    isActive() {
+    isActive () {
       const that = this;
       if (that.currentSelect.id === that.node.id) return true;
       let f = that.currentSelectGroup.filter(n => n.id === that.node.id);
@@ -217,20 +239,20 @@ export default {
     }
   },
   watch: {
-    select(val) {
+    select (val) {
       this.currentSelect = val;
     },
     currentSelect: {
-      handler(val) {
+      handler (val) {
         this.$emit('update:select', val);
       },
       deep: true
     },
-    selectGroup(val) {
+    selectGroup (val) {
       this.currentSelectGroup = val;
     },
     currentSelectGroup: {
-      handler(val) {
+      handler (val) {
         this.$emit('update:selectGroup', val);
       },
       deep: true
